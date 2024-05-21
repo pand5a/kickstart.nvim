@@ -381,12 +381,41 @@ require('lazy').setup({
         -- You can put your default mappings / updates / etc. in here
         --  All the info you're looking for is in `:help telescope.setup()`
         --
-        -- defaults = {
-        --   mappings = {
-        --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
-        --   },
-        -- },
-        -- pickers = {}
+        defaults = {
+          --   mappings = {
+          --     i = { ['<c-enter>'] = 'to_fuzzy_refine' },
+          --   },
+        },
+        pickers = {
+          live_grep = {
+            additional_args = function()
+              return { '--hidden' }
+            end,
+          },
+          lsp_references = {
+            show_line = false,
+            layout_strategy = 'vertical',
+            layout_config = { width = 0.8 },
+          },
+          find_files = {
+            layout_strategy = 'vertical',
+            layout_config = { width = 0.8 },
+            previewer = false,
+          },
+          lsp_document_symbols = {
+            show_line = false,
+            symbol_width = 0.7,
+            layout_config = { width = 0.9 },
+          },
+
+          lsp_dynamic_workspace_symbols = {
+            show_line = false,
+            fname_width = 0.5,
+            symbol_width = 0.4,
+            layout_strategy = 'vertical',
+            layout_config = { width = 0.9 },
+          },
+        },
         extensions = {
           ['ui-select'] = {
             require('telescope.themes').get_dropdown(),
@@ -784,7 +813,8 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          -- ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<CR>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -915,6 +945,36 @@ require('lazy').setup({
     --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
     --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
     --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+  },
+  {
+    'nvim-tree/nvim-tree.lua',
+    config = function()
+      vim.opt.termguicolors = true
+      require('nvim-tree').setup {
+        sort = {
+          sorter = 'case_sensitive',
+        },
+        view = {
+          width = 40,
+        },
+        renderer = {
+          group_empty = true,
+        },
+        filters = {
+          dotfiles = true,
+        },
+      }
+    end,
+  },
+  {
+    'voldikss/vim-translator',
+    config = function()
+      vim.keymap.set({ 'n', 'v' }, 'mm', ':Translate <CR>', { desc = '[m] Translate' })
+      vim.keymap.set({ 'n', 'v' }, 'mw', ':TranslateW <CR>', { desc = '[w] Translate in window' })
+    end,
+  },
+  {
+    'sindrets/diffview.nvim',
   },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
