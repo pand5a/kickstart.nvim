@@ -83,7 +83,6 @@ I hope you enjoy your Neovim journey,
 
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
-
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -103,6 +102,12 @@ vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
 -- vim.opt.relativenumber = true
+
+-- Tab
+vim.opt.tabstop = 4 -- number of visual spaces per TAB
+vim.opt.softtabstop = 4 -- number of spacesin tab when editing
+vim.opt.shiftwidth = 4 -- insert 4 spaces on a tab
+vim.opt.expandtab = false -- tabs are spaces, mainly because of python
 
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
@@ -156,6 +161,23 @@ vim.opt.scrolloff = 10
 
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
+
+-- define common options
+local opts = {
+  noremap = true, -- non-recursive
+  silent = true, -- do not show message
+}
+
+-- Visual mode 可一直缩进
+vim.keymap.set('v', '<', '<gv', opts)
+vim.keymap.set('v', '>', '>gv', opts)
+
+-- Resize with arrows
+-- delta: 2 lines
+vim.keymap.set('n', '<C-Up>', ':resize -2<CR>', opts)
+vim.keymap.set('n', '<C-Down>', ':resize +2<CR>', opts)
+vim.keymap.set('n', '<C-Left>', ':vertical resize -2<CR>', opts)
+vim.keymap.set('n', '<C-Right>', ':vertical resize +2<CR>', opts)
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.opt.hlsearch = true
@@ -241,7 +263,7 @@ require('lazy').setup({
   --    require('Comment').setup({})
 
   -- "gc" to comment visual regions/lines
-  { 'numToStr/Comment.nvim', opts = {} },
+  -- { 'numToStr/Comment.nvim', opts = {} },
 
   -- Here is a more advanced example where we pass configuration
   -- options to `gitsigns.nvim`. This is equivalent to the following Lua:
@@ -914,6 +936,9 @@ require('lazy').setup({
   },
   {
     'voldikss/vim-translator',
+    init = function()
+      -- vim.g.translator_default_engines = { 'offline' }
+    end,
     config = function()
       vim.keymap.set({ 'n', 'v' }, 'mm', ':Translate <CR>', { desc = '[m] Translate' })
       vim.keymap.set({ 'n', 'v' }, 'mw', ':TranslateW <CR>', { desc = '[w] Translate in window' })
