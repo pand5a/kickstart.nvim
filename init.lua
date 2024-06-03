@@ -528,6 +528,10 @@ require('lazy').setup({
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
+      -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
+      -- used for completion, annotations and signatures of Neovim apis
+      { 'folke/neodev.nvim', opts = {} },
+      { 'SmiteshP/nvim-navic', opts = { lsp = { auto_attach = true } } },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -731,6 +735,14 @@ require('lazy').setup({
             -- certain features of an LSP (for example, turning off formatting for ts_ls)
             server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
             require('lspconfig')[server_name].setup(server)
+
+            -- Navic
+            require('lspconfig')[server_name].setup {
+              on_attach = function(client, bufnr)
+                require('nvim-navic').attach(client, bufnr)
+              end,
+            }
+            vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
           end,
         },
       }
@@ -955,6 +967,13 @@ require('lazy').setup({
       --  Check out: https://github.com/echasnovski/mini.nvim
     end,
   },
+  -- {
+  --   'nvim-lualine/lualine.nvim',
+  --   dependencies = { 'nvim-tree/nvim-web-devicons' },
+  --   config = function()
+  --     require('lualine').setup {}
+  --   end,
+  -- },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
     build = ':TSUpdate',
@@ -1013,6 +1032,35 @@ require('lazy').setup({
   {
     'sindrets/diffview.nvim',
   },
+  -- {
+  --   'SmiteshP/nvim-navic',
+  --   dependencies = {
+  --     'neovim/nvim-lspconfig',
+  --   },
+  --   opts = { lsp = { auto_attach = true } },
+  --   config = function()
+  --     require('mason-lspconfig').setup {
+  --       handlers = {
+  --         function(server_name)
+  --           local server = servers[server_name] or {}
+  --           local navic = require 'nvim-navic'
+  --           -- This handles overriding only values explicitly passed
+  --           -- by the server configuration above. Useful when disabling
+  --           -- certain features of an LSP (for example, turning off formatting for tsserver)
+  --           server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+  --           require('lspconfig')[server_name].setup(server)
+  --           require('lspconfig')[server_name].setup {
+  --             on_attach = function(client, bufnr)
+  --               navic.attach(client, bufnr)
+  --             end,
+  --           }
+  --         end,
+  --       },
+  --     }
+  --
+  --     vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
+  --   end,
+  -- },
 
   -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
