@@ -742,6 +742,19 @@ require('lazy').setup({
                 require('nvim-navic').attach(client, bufnr)
               end,
             }
+            require('nvim-navic').setup {
+              lsp = {
+                auto_attach = false,
+                preference = nil,
+              },
+              highlight = true,
+              separator = ' > ',
+              depth_limit = 0,
+              depth_limit_indicator = '..',
+              safe_output = true,
+              lazy_update_context = false,
+              click = true,
+            }
             vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
           end,
         },
@@ -960,7 +973,7 @@ require('lazy').setup({
       -- cursor location to LINE:COLUMN
       ---@diagnostic disable-next-line: duplicate-set-field
       statusline.section_location = function()
-        return '%P|%L│%2v|%-2{virtcol("$") - 1}'
+        return '%p%% %2l:%-2v'
       end
 
       -- ... and there is more!
@@ -1032,37 +1045,7 @@ require('lazy').setup({
   {
     'sindrets/diffview.nvim',
   },
-  -- {
-  --   'SmiteshP/nvim-navic',
-  --   dependencies = {
-  --     'neovim/nvim-lspconfig',
-  --   },
-  --   opts = { lsp = { auto_attach = true } },
-  --   config = function()
-  --     require('mason-lspconfig').setup {
-  --       handlers = {
-  --         function(server_name)
-  --           local server = servers[server_name] or {}
-  --           local navic = require 'nvim-navic'
-  --           -- This handles overriding only values explicitly passed
-  --           -- by the server configuration above. Useful when disabling
-  --           -- certain features of an LSP (for example, turning off formatting for tsserver)
-  --           server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
-  --           require('lspconfig')[server_name].setup(server)
-  --           require('lspconfig')[server_name].setup {
-  --             on_attach = function(client, bufnr)
-  --               navic.attach(client, bufnr)
-  --             end,
-  --           }
-  --         end,
-  --       },
-  --     }
-  --
-  --     vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
-  --   end,
-  -- },
-
-  -- The following comments only work if you have downloaded the kickstart repo, not just copy pasted the
+  -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
 
