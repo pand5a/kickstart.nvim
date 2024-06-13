@@ -101,7 +101,7 @@ vim.g.have_nerd_font = false
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
--- vim.opt.relativenumber = true
+vim.opt.relativenumber = true
 
 -- Tab
 vim.opt.tabstop = 4 -- number of visual spaces per TAB
@@ -286,6 +286,9 @@ require('lazy').setup({
         delete = { text = '_' },
         topdelete = { text = '‾' },
         changedelete = { text = '~' },
+      },
+      current_line_blame_opts = {
+        virt_text_pos = 'right_align',
       },
     },
   },
