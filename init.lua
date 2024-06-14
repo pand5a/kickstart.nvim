@@ -190,7 +190,7 @@ vim.keymap.set('n', '<C-Left>', ':vertical resize -2<CR>', opts)
 vim.keymap.set('n', '<C-Right>', ':vertical resize +2<CR>', opts)
 
 -- Nvimtree
-vim.keymap.set({ 'n', 'v' }, '<leader>b', ':NvimTreeToggle<CR>', { desc = '[b] Open NvimTree' })
+vim.keymap.set({ 'n', 'v' }, '<leader>b', '<cmd>NvimTreeFindFileToggle<CR>', { desc = '[b] Open NvimTree' })
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -201,6 +201,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- Jump to body begin/end
 vim.keymap.set({ 'n', 'v' }, '[[', '[{', { desc = 'Jump body begin' })
 vim.keymap.set({ 'n', 'v' }, ']]', ']}', { desc = 'Jump body end' })
+
+-- CTRL+<du> 9line
+vim.keymap.set({ 'n', 'v' }, '<C-d>', '9j', {})
+vim.keymap.set({ 'n', 'v' }, '<C-u>', '9k', {})
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -431,8 +435,15 @@ require('lazy').setup({
           },
           lsp_references = {
             show_line = false,
-            layout_strategy = 'vertical',
+            -- layout_strategy = 'vertical',
             layout_config = { width = 0.8 },
+          },
+          lsp_incoming_calls = {
+            -- show_line = false,
+            fname_width = 0.6,
+            symbol_width = 0.4,
+            --layout_strategy = 'vertical',
+            layout_config = { width = 0.99 },
           },
           find_files = {
             layout_strategy = 'vertical',
@@ -476,6 +487,7 @@ require('lazy').setup({
       vim.keymap.set('n', '<leader>sr', builtin.resume, { desc = '[S]earch [R]esume' })
       vim.keymap.set('n', '<leader>s.', builtin.oldfiles, { desc = '[S]earch Recent Files ("." for repeat)' })
       vim.keymap.set('n', '<leader><leader>', builtin.buffers, { desc = '[ ] Find existing buffers' })
+      vim.keymap.set('n', '<leader>ma', builtin.marks, { desc = 'List marks' })
 
       -- Slightly advanced example of overriding default behavior and theme
       vim.keymap.set('n', '<leader>/', function()
@@ -585,7 +597,8 @@ require('lazy').setup({
           map('gd', require('telescope.builtin').lsp_definitions, '[G]oto [D]efinition')
 
           -- Find references for the word under your cursor.
-          map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          --map('gr', require('telescope.builtin').lsp_references, '[G]oto [R]eferences')
+          map('gr', require('telescope.builtin').lsp_incoming_calls, 'Incoming Calls')
 
           -- Jump to the implementation of the word under your cursor.
           --  Useful when your language has ways of declaring types without an actual implementation.
@@ -1018,7 +1031,13 @@ require('lazy').setup({
   {
     'nvim-tree/nvim-tree.lua',
     config = function()
+      -- disable netrw at the very start of your init.lua
+      vim.g.loaded_netrw = 1
+      vim.g.loaded_netrwPlugin = 1
+
+      -- optionally enable 24-bit colour
       vim.opt.termguicolors = true
+
       require('nvim-tree').setup {
         sort = {
           sorter = 'case_sensitive',
