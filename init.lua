@@ -494,7 +494,7 @@ require('lazy').setup({
           lsp_references = {
             show_line = false,
             -- layout_strategy = 'vertical',
-            layout_config = { width = 0.8 },
+            layout_config = { width = 0.99 },
           },
           lsp_incoming_calls = {
             -- show_line = false,
@@ -1124,6 +1124,20 @@ require('lazy').setup({
   },
   {
     'sindrets/diffview.nvim',
+  },
+  {
+    'folke/flash.nvim',
+    event = 'VeryLazy',
+    ---@type Flash.Config
+    opts = {},
+    -- stylua: ignore
+    keys = {
+      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
+      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
+      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
+      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+    },
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
