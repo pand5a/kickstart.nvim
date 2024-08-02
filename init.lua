@@ -92,6 +92,10 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
+
+vim.g.translator_default_engines = { 'libre' }
+vim.g.translator_source_lang = 'en'
+
 -- [[ Setting options ]]
 -- See `:help vim.opt`
 -- NOTE: You can change these options as you wish!
@@ -104,9 +108,9 @@ vim.opt.number = true
 vim.opt.relativenumber = true
 
 -- Tab
-vim.opt.tabstop = 4 -- number of visual spaces per TAB
-vim.opt.softtabstop = 4 -- number of spacesin tab when editing
-vim.opt.shiftwidth = 4 -- insert 4 spaces on a tab
+vim.opt.tabstop = 4       -- number of visual spaces per TAB
+vim.opt.softtabstop = 4   -- number of spacesin tab when editing
+vim.opt.shiftwidth = 4    -- insert 4 spaces on a tab
 vim.opt.expandtab = false -- tabs are spaces, mainly because of python
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -150,7 +154,7 @@ vim.opt.splitbelow = true
 -- Sets how neovim will display certain whitespace characters in the editor.
 --  See `:help 'list'`
 --  and `:help 'listchars'`
-vim.opt.list = true
+vim.opt.list = false
 vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 
 -- Preview substitutions live, as you type!
@@ -175,7 +179,7 @@ vim.opt.foldlevel = 99
 -- define common options
 local opts = {
   noremap = true, -- non-recursive
-  silent = true, -- do not show message
+  silent = true,  -- do not show message
 }
 
 -- Comment
@@ -194,7 +198,7 @@ vim.keymap.set('n', '<C-Left>', ':vertical resize -2<CR>', opts)
 vim.keymap.set('n', '<C-Right>', ':vertical resize +2<CR>', opts)
 
 -- Nvimtree
-vim.keymap.set({ 'n', 'v' }, '<leader>b', '<cmd>NvimTreeFindFileToggle<CR>', { desc = '[b] Open NvimTree' })
+vim.keymap.set({ 'n', 'v' }, '<leader>b', '<cmd>NvimTreeFindFileToggle<CR>', { desc = '[f] Open NvimTree' })
 
 -- Set highlight on search, but clear on pressing <Esc> in normal mode
 vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
@@ -369,7 +373,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  { -- Useful plugin to show you pending keybinds.
+  {                     -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -452,7 +456,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -597,14 +601,14 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim', opts = {} },
+      { 'j-hui/fidget.nvim',       opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
       -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
-      { 'folke/neodev.nvim', opts = {} },
-      { 'SmiteshP/nvim-navic', opts = { lsp = { auto_attach = true } } },
+      { 'folke/neodev.nvim',       opts = {} },
+      { 'SmiteshP/nvim-navic',     opts = { lsp = { auto_attach = true } } },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -1132,12 +1136,141 @@ require('lazy').setup({
     opts = {},
     -- stylua: ignore
     keys = {
-      { "s", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash" },
-      { "S", mode = { "n", "x", "o" }, function() require("flash").treesitter() end, desc = "Flash Treesitter" },
-      { "r", mode = "o", function() require("flash").remote() end, desc = "Remote Flash" },
-      { "R", mode = { "o", "x" }, function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
-      { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
+      { "s",     mode = { "n", "x", "o" }, function() require("flash").jump() end,              desc = "Flash" },
+      { "S",     mode = { "n", "x", "o" }, function() require("flash").treesitter() end,        desc = "Flash Treesitter" },
+      { "r",     mode = "o",               function() require("flash").remote() end,            desc = "Remote Flash" },
+      { "R",     mode = { "o", "x" },      function() require("flash").treesitter_search() end, desc = "Treesitter Search" },
+      { "<c-s>", mode = { "c" },           function() require("flash").toggle() end,            desc = "Toggle Flash Search" },
     },
+  },
+  {
+    "mfussenegger/nvim-dap",
+    config = function()
+      vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
+      vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
+      vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
+      vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+      -- vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
+      vim.keymap.set('n', '<Leader>B', function() require('dap').set_breakpoint() end)
+      vim.keymap.set('n', '<Leader>lp',
+        function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
+      vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
+      vim.keymap.set('n', '<Leader>dl', function() require('dap').run_last() end)
+      vim.keymap.set({ 'n', 'v' }, '<Leader>dh', function()
+        require('dap.ui.widgets').hover()
+      end)
+      vim.keymap.set({ 'n', 'v' }, '<Leader>dp', function()
+        require('dap.ui.widgets').preview()
+      end)
+      vim.keymap.set('n', '<Leader>df', function()
+        local widgets = require('dap.ui.widgets')
+        widgets.centered_float(widgets.frames)
+      end)
+      vim.keymap.set('n', '<Leader>ds', function()
+        local widgets = require('dap.ui.widgets')
+        widgets.centered_float(widgets.scopes)
+      end)
+
+
+      local dap = require("dap")
+
+
+      dap.adapters.delve = {
+        type = 'server',
+        port = '${port}',
+        executable = {
+          command = 'dlv',
+          args = { 'dap', '-l', '127.0.0.1:${port}' },
+          -- add this if on windows, otherwise server won't open successfully
+          -- detached = false
+        }
+      }
+
+      -- dap.configurations.go = {
+      --   {
+      --     type = "delve",
+      --     request = "launch",
+      --     program = "${command:pickFile}",
+      --     name = "launch file",
+      --   },
+      --   -- https://github.com/go-delve/delve/blob/master/Documentation/usage/dlv_dap.md
+      --   {
+      --     type = "delve",
+      --     name = "Debug",
+      --     request = "launch",
+      --     program = "${command:pickFile}",
+      --   },
+      --   {
+      --     type = "delve",
+      --     name = "Debug test", -- configuration for debugging test files
+      --     request = "launch",
+      --     mode = "test",
+      --     program = "${command:pickFile}",
+      --   },
+      --   -- works with go.mod packages and sub packages
+      --   {
+      --     type = "delve",
+      --     name = "Debug test (go.mod)",
+      --     request = "launch",
+      --     mode = "test",
+      --     program = "./${relativeFileDirname}"
+      --   }
+      -- }
+    end
+  },
+  {
+    "leoluz/nvim-dap-go",
+    config = function()
+      require('dap-go').setup {
+        dap_configurations = {
+          {
+            type = "go",
+            request = "launch",
+            program = "${command:pickFile}",
+            name = "Debug file",
+          },
+        }
+      }
+    end
+  },
+  {
+    "rcarriga/nvim-dap-ui",
+    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    keys = {
+      {
+        "<leader>du",
+        function()
+          require("dapui").toggle()
+        end,
+        silent = true,
+      },
+    },
+    config = function(_, opts)
+      require("neodev").setup({
+        library = { plugins = { "nvim-dap-ui" }, types = true },
+      })
+
+      require("dapui").setup(opts)
+    end
+  },
+  {
+    "theHamsta/nvim-dap-virtual-text",
+    config = function()
+      require("nvim-dap-virtual-text").setup {}
+    end
+  },
+  {
+    "ellisonleao/glow.nvim",
+    cmd = "Glow",
+    config = function(self)
+      require('glow').setup({
+        pager = false,
+        width = 400,
+        height = 100,
+        width_ratio = 0.9, -- maximum width of the Glow window compared to the nvim window size (overrides `width`)
+        height_ratio = 0.9,
+      })
+    end
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
