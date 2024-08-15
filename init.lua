@@ -93,6 +93,7 @@ vim.g.maplocalleader = ' '
 vim.g.have_nerd_font = false
 
 
+-- translator
 vim.g.translator_default_engines = { 'libre' }
 vim.g.translator_source_lang = 'en'
 
@@ -105,7 +106,7 @@ vim.g.translator_source_lang = 'en'
 vim.opt.number = true
 -- You can also add relative line numbers, to help with jumping.
 --  Experiment for yourself to see if you like it!
-vim.opt.relativenumber = true
+-- vim.opt.relativenumber = true
 
 -- Tab
 vim.opt.tabstop = 4       -- number of visual spaces per TAB
@@ -176,11 +177,17 @@ vim.opt.foldlevel = 99
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
+
 -- define common options
 local opts = {
   noremap = true, -- non-recursive
   silent = true,  -- do not show message
 }
+
+-- tnoremap <Esc> <C-\><C-n>
+-- To map <Esc> to exit terminal-mode:
+vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', opts)
+
 
 -- Comment
 vim.keymap.set('n', '<leader>/', 'gcc', { desc = 'Comment toggle', remap = true })
@@ -589,7 +596,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta', lazy = true },
+  { 'Bilal2453/luvit-meta',     lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -607,8 +614,8 @@ require('lazy').setup({
       'hrsh7th/cmp-nvim-lsp',
       -- `neodev` configures Lua LSP for your Neovim config, runtime and plugins
       -- used for completion, annotations and signatures of Neovim apis
-      { 'folke/neodev.nvim',       opts = {} },
-      { 'SmiteshP/nvim-navic',     opts = { lsp = { auto_attach = true } } },
+      -- { 'folke/neodev.nvim',       opts = {} },
+      { 'SmiteshP/nvim-navic', opts = { lsp = { auto_attach = true } } },
     },
     config = function()
       -- Brief aside: **What is LSP?**
@@ -1117,7 +1124,8 @@ require('lazy').setup({
     end,
   },
   {
-    'voldikss/vim-translator',
+    -- 'voldikss/vim-translator',
+    'pand5a/vim-translator',
     init = function()
       -- vim.g.translator_default_engines = { 'offline' }
     end,
@@ -1246,17 +1254,22 @@ require('lazy').setup({
       },
     },
     config = function(_, opts)
-      require("neodev").setup({
-        library = { plugins = { "nvim-dap-ui" }, types = true },
-      })
+      -- require("neodev").setup({
+      --   library = { plugins = { "nvim-dap-ui" }, types = true },
+      -- })
 
       require("dapui").setup(opts)
+      vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
     end
   },
   {
     "theHamsta/nvim-dap-virtual-text",
     config = function()
-      require("nvim-dap-virtual-text").setup {}
+      require("nvim-dap-virtual-text").setup {
+        all_frames = false,
+        virt_text_pos = 'inline'
+      }
+      require("nvim-dap-virtual-text").disable()
     end
   },
   {
@@ -1267,8 +1280,8 @@ require('lazy').setup({
         pager = false,
         width = 400,
         height = 100,
-        width_ratio = 0.9, -- maximum width of the Glow window compared to the nvim window size (overrides `width`)
-        height_ratio = 0.9,
+        width_ratio = 1, -- maximum width of the Glow window compared to the nvim window size (overrides `width`)
+        height_ratio = 1,
       })
     end
   },
