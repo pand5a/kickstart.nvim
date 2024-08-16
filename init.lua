@@ -214,8 +214,8 @@ vim.keymap.set('n', '<Esc>', '<cmd>nohlsearch<CR>')
 vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagnostic [Q]uickfix list' })
 
 -- Jump to body begin/end
-vim.keymap.set({ 'n', 'v' }, '[[', '[{', { desc = 'Jump body begin' })
-vim.keymap.set({ 'n', 'v' }, ']]', ']}', { desc = 'Jump body end' })
+-- vim.keymap.set({ 'n', 'v' }, '[[', '[{', { desc = 'Jump body begin' })
+-- vim.keymap.set({ 'n', 'v' }, ']]', ']}', { desc = 'Jump body end' })
 
 -- CTRL+<du> 9line
 vim.keymap.set({ 'n', 'v' }, '<C-d>', '9j', {})
@@ -518,6 +518,9 @@ require('lazy').setup({
             layout_strategy = 'vertical',
             layout_config = { width = 0.8 },
             previewer = false,
+            -- hidden = true,
+            -- no_ignore = true,
+            -- no_ignore_parent = true,
           },
           lsp_document_symbols = {
             show_line = false,
@@ -1074,6 +1077,7 @@ require('lazy').setup({
   -- },
   { -- Highlight, edit, and navigate code
     'nvim-treesitter/nvim-treesitter',
+    dependencies = { 'nvim-treesitter/nvim-treesitter-textobjects' },
     build = ':TSUpdate',
     main = 'nvim-treesitter.configs', -- Sets main module to use for opts
     -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -1089,13 +1093,77 @@ require('lazy').setup({
         additional_vim_regex_highlighting = { 'ruby' },
       },
       indent = { enable = true, disable = { 'ruby' } },
+      textobjects = {
+        move = {
+          enable = true,
+          set_jumps = true, -- whether to set jumps in the jumplist
+          goto_next_start = {
+            ["]m"] = "@function.outer",
+            ["]]"] = { query = "@class.outer", desc = "Next class start" },
+            --
+            -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
+            ["]o"] = "@loop.*",
+            -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+            --
+            -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+            -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+            ["]s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
+            ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+          },
+          goto_next_end = {
+            ["]M"] = "@function.outer",
+            ["]["] = "@class.outer",
+          },
+          goto_previous_start = {
+            ["[m"] = "@function.outer",
+            ["[["] = "@class.outer",
+          },
+          goto_previous_end = {
+            ["[M"] = "@function.outer",
+            ["[]"] = "@class.outer",
+          },
+          -- Below will go to either the start or the end, whichever is closer.
+          -- Use if you want more granular movements
+          -- Make it even more gradual by adding multiple queries and regex.
+          goto_next = {
+            ["]d"] = "@conditional.outer",
+          },
+          goto_previous = {
+            ["[d"] = "@conditional.outer",
+          }
+        }
+      }
     },
-    -- There are additional nvim-treesitter modules that you can use to interact
-    -- with nvim-treesitter. You should go explore a few and see what interests you:
-    --
-    --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
-    --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
-    --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    config = function(_, opts)
+      -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
+
+      ---@diagnostic disable-next-line: missing-fields
+      require('nvim-treesitter.configs').setup(opts)
+      -- move = {
+      --   enable = true,
+      --   set_jumps = true, -- whether to set jumps in the jumplist
+      --   goto_next_start = {
+      --     ["]m"] = "@function.outer",
+      --     ["]]"] = { query = "@class.outer", desc = "Next class start" },
+      --     --
+      --     -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
+      --     ["]o"] = "@loop.*",
+      --     -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+      --     --
+      --     -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+      --     -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+      --     ["]s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
+      --     ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+      --   },
+      -- }
+
+      -- There are additional nvim-treesitter modules that you can use to interact
+      -- with nvim-treesitter. You should go explore a few and see what interests you:
+      --
+      --    - Incremental selection: Included, see `:help nvim-treesitter-incremental-selection-mod`
+      --    - Show your current context: https://github.com/nvim-treesitter/nvim-treesitter-context
+      --    - Treesitter + textobjects: https://github.com/nvim-treesitter/nvim-treesitter-textobjects
+    end,
   },
   {
     'nvim-tree/nvim-tree.lua',
@@ -1284,6 +1352,23 @@ require('lazy').setup({
         height_ratio = 1,
       })
     end
+  },
+  {
+    "numToStr/FTerm.nvim",
+    config = function()
+      require 'FTerm'.setup({
+        border     = 'double',
+        dimensions = {
+          height = 0.9,
+          width = 0.9,
+        },
+      })
+
+      -- Example keybindings
+      vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>')
+      vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
+    end
+
   },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
