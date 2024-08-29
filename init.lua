@@ -92,7 +92,6 @@ vim.g.maplocalleader = ' '
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
 
-
 -- translator
 vim.g.translator_default_engines = { 'libre' }
 vim.g.translator_source_lang = 'en'
@@ -109,9 +108,9 @@ vim.opt.number = true
 -- vim.opt.relativenumber = true
 
 -- Tab
-vim.opt.tabstop = 4       -- number of visual spaces per TAB
-vim.opt.softtabstop = 4   -- number of spacesin tab when editing
-vim.opt.shiftwidth = 4    -- insert 4 spaces on a tab
+vim.opt.tabstop = 4 -- number of visual spaces per TAB
+vim.opt.softtabstop = 4 -- number of spacesin tab when editing
+vim.opt.shiftwidth = 4 -- insert 4 spaces on a tab
 vim.opt.expandtab = false -- tabs are spaces, mainly because of python
 
 -- Enable mouse mode, can be useful for resizing splits for example!
@@ -177,21 +176,19 @@ vim.opt.foldlevel = 99
 -- [[ Basic Keymaps ]]
 --  See `:help vim.keymap.set()`
 
-
 -- define common options
 local opts = {
   noremap = true, -- non-recursive
-  silent = true,  -- do not show message
+  silent = true, -- do not show message
 }
 
 -- tnoremap <Esc> <C-\><C-n>
 -- To map <Esc> to exit terminal-mode:
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', opts)
 
-
 -- Comment
-vim.keymap.set('n', '<leader>/', 'gcc', { desc = 'Comment toggle', remap = true })
-vim.keymap.set('v', '<leader>/', 'gc', { desc = 'Comment toggle', remap = true })
+vim.keymap.set('n', '<C-_>', 'gcc', { desc = 'Comment toggle', remap = true })
+vim.keymap.set('v', '<C-_>', 'gc', { desc = 'Comment toggle', remap = true })
 
 -- Visual mode 可一直缩进
 vim.keymap.set('v', '<', '<gv', opts)
@@ -380,7 +377,7 @@ require('lazy').setup({
   -- Then, because we use the `opts` key (recommended), the configuration runs
   -- after the plugin has been loaded as `require(MODULE).setup(opts)`.
 
-  {                     -- Useful plugin to show you pending keybinds.
+  { -- Useful plugin to show you pending keybinds.
     'folke/which-key.nvim',
     event = 'VimEnter', -- Sets the loading event to 'VimEnter'
     opts = {
@@ -463,7 +460,7 @@ require('lazy').setup({
       { 'nvim-telescope/telescope-ui-select.nvim' },
 
       -- Useful for getting pretty icons, but requires a Nerd Font.
-      { 'nvim-tree/nvim-web-devicons',            enabled = vim.g.have_nerd_font },
+      { 'nvim-tree/nvim-web-devicons', enabled = vim.g.have_nerd_font },
     },
     config = function()
       -- Telescope is a fuzzy finder that comes with a lot of different things that
@@ -599,7 +596,7 @@ require('lazy').setup({
       },
     },
   },
-  { 'Bilal2453/luvit-meta',     lazy = true },
+  { 'Bilal2453/luvit-meta', lazy = true },
   {
     -- Main LSP Configuration
     'neovim/nvim-lspconfig',
@@ -611,7 +608,7 @@ require('lazy').setup({
 
       -- Useful status updates for LSP.
       -- NOTE: `opts = {}` is the same as calling `require('fidget').setup({})`
-      { 'j-hui/fidget.nvim',       opts = {} },
+      { 'j-hui/fidget.nvim', opts = {} },
 
       -- Allows extra capabilities provided by nvim-cmp
       'hrsh7th/cmp-nvim-lsp',
@@ -870,13 +867,7 @@ require('lazy').setup({
         -- Disable "format_on_save lsp_fallback" for languages that don't
         -- have a well standardized coding style. You can add additional
         -- languages here or re-enable it for the disabled ones.
-        local disable_filetypes = { c = true, cpp = true }
-        local lsp_format_opt
-        if disable_filetypes[vim.bo[bufnr].filetype] then
-          lsp_format_opt = 'never'
-        else
-          lsp_format_opt = 'fallback'
-        end
+        local disable_filetypes = { c = true, cpp = true, go = true }
         return {
           timeout_ms = 500,
           lsp_format = lsp_format_opt,
@@ -884,6 +875,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
+        -- go = { '/home/esgyn/Documents/tools/gotools/goimports' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -891,6 +883,9 @@ require('lazy').setup({
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
       },
     },
+    -- config = function()
+    --   -- require('conform').formatters_by_ft.go = { command = '/home/esgyn/Documents/tools/gotools/goimports' }
+    -- end,
   },
 
   { -- Autocompletion
@@ -1097,42 +1092,43 @@ require('lazy').setup({
         move = {
           enable = true,
           set_jumps = true, -- whether to set jumps in the jumplist
-          goto_next_start = {
-            ["]m"] = "@function.outer",
-            ["]]"] = { query = "@class.outer", desc = "Next class start" },
-            --
-            -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
-            ["]o"] = "@loop.*",
-            -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
-            --
-            -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
-            -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
-            ["]s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
-            ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
-          },
-          goto_next_end = {
-            ["]M"] = "@function.outer",
-            ["]["] = "@class.outer",
-          },
+
+          -- goto_next_start = {
+          --   ["]m"] = "@function.outer",
+          --   ["]]"] = { query = "@class.outer", desc = "Next class start" },
+          --   --
+          --   -- You can use regex matching (i.e. lua pattern) and/or pass a list in a "query" key to group multiple queries.
+          --   ["]o"] = "@loop.*",
+          --   -- ["]o"] = { query = { "@loop.inner", "@loop.outer" } }
+          --   --
+          --   -- You can pass a query group to use query from `queries/<lang>/<query_group>.scm file in your runtime path.
+          --   -- Below example nvim-treesitter's `locals.scm` and `folds.scm`. They also provide highlights.scm and indent.scm.
+          --   ["]s"] = { query = "@scope", query_group = "locals", desc = "Next scope" },
+          --   ["]z"] = { query = "@fold", query_group = "folds", desc = "Next fold" },
+          -- },
+          -- goto_next_end = {
+          --   ["]M"] = "@function.outer",
+          --   ["]["] = "@class.outer",
+          -- },
           goto_previous_start = {
-            ["[m"] = "@function.outer",
-            ["[["] = "@class.outer",
+            ['[['] = '@function.outer',
+            -- ["[["] = "@class.outer",
           },
-          goto_previous_end = {
-            ["[M"] = "@function.outer",
-            ["[]"] = "@class.outer",
-          },
-          -- Below will go to either the start or the end, whichever is closer.
-          -- Use if you want more granular movements
-          -- Make it even more gradual by adding multiple queries and regex.
-          goto_next = {
-            ["]d"] = "@conditional.outer",
-          },
-          goto_previous = {
-            ["[d"] = "@conditional.outer",
-          }
-        }
-      }
+          -- goto_previous_end = {
+          --   ["[M"] = "@function.outer",
+          --   ["[]"] = "@class.outer",
+          -- },
+          -- -- Below will go to either the start or the end, whichever is closer.
+          -- -- Use if you want more granular movements
+          -- -- Make it even more gradual by adding multiple queries and regex.
+          -- goto_next = {
+          --   ["]d"] = "@conditional.outer",
+          -- },
+          -- goto_previous = {
+          --   ["[d"] = "@conditional.outer",
+          -- }
+        },
+      },
     },
     config = function(_, opts)
       -- [[ Configure Treesitter ]] See `:help nvim-treesitter`
@@ -1220,18 +1216,33 @@ require('lazy').setup({
     },
   },
   {
-    "mfussenegger/nvim-dap",
+    'mfussenegger/nvim-dap',
     config = function()
-      vim.keymap.set('n', '<F5>', function() require('dap').continue() end)
-      vim.keymap.set('n', '<F10>', function() require('dap').step_over() end)
-      vim.keymap.set('n', '<F11>', function() require('dap').step_into() end)
-      vim.keymap.set('n', '<F12>', function() require('dap').step_out() end)
+      vim.keymap.set('n', '<F5>', function()
+        require('dap').continue()
+      end)
+      vim.keymap.set('n', '<F10>', function()
+        require('dap').step_over()
+      end)
+      vim.keymap.set('n', '<F11>', function()
+        require('dap').step_into()
+      end)
+      vim.keymap.set('n', '<F12>', function()
+        require('dap').step_out()
+      end)
       -- vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
-      vim.keymap.set('n', '<Leader>B', function() require('dap').set_breakpoint() end)
-      vim.keymap.set('n', '<Leader>lp',
-        function() require('dap').set_breakpoint(nil, nil, vim.fn.input('Log point message: ')) end)
-      vim.keymap.set('n', '<Leader>dr', function() require('dap').repl.open() end)
-      vim.keymap.set('n', '<Leader>dl', function() require('dap').run_last() end)
+      vim.keymap.set('n', '<Leader>B', function()
+        require('dap').set_breakpoint()
+      end)
+      vim.keymap.set('n', '<Leader>lp', function()
+        require('dap').set_breakpoint(nil, nil, vim.fn.input 'Log point message: ')
+      end)
+      vim.keymap.set('n', '<Leader>dr', function()
+        require('dap').repl.open()
+      end)
+      vim.keymap.set('n', '<Leader>dl', function()
+        require('dap').run_last()
+      end)
       vim.keymap.set({ 'n', 'v' }, '<Leader>dh', function()
         require('dap.ui.widgets').hover()
       end)
@@ -1239,17 +1250,15 @@ require('lazy').setup({
         require('dap.ui.widgets').preview()
       end)
       vim.keymap.set('n', '<Leader>df', function()
-        local widgets = require('dap.ui.widgets')
+        local widgets = require 'dap.ui.widgets'
         widgets.centered_float(widgets.frames)
       end)
       vim.keymap.set('n', '<Leader>ds', function()
-        local widgets = require('dap.ui.widgets')
+        local widgets = require 'dap.ui.widgets'
         widgets.centered_float(widgets.scopes)
       end)
 
-
-      local dap = require("dap")
-
+      local dap = require 'dap'
 
       dap.adapters.delve = {
         type = 'server',
@@ -1259,7 +1268,7 @@ require('lazy').setup({
           args = { 'dap', '-l', '127.0.0.1:${port}' },
           -- add this if on windows, otherwise server won't open successfully
           -- detached = false
-        }
+        },
       }
 
       -- dap.configurations.go = {
@@ -1292,31 +1301,31 @@ require('lazy').setup({
       --     program = "./${relativeFileDirname}"
       --   }
       -- }
-    end
+    end,
   },
   {
-    "leoluz/nvim-dap-go",
+    'leoluz/nvim-dap-go',
     config = function()
       require('dap-go').setup {
         dap_configurations = {
           {
-            type = "go",
-            request = "launch",
-            program = "${command:pickFile}",
-            name = "Debug file",
+            type = 'go',
+            request = 'launch',
+            program = '${command:pickFile}',
+            name = 'Debug file',
           },
-        }
+        },
       }
-    end
+    end,
   },
   {
-    "rcarriga/nvim-dap-ui",
-    dependencies = { "mfussenegger/nvim-dap", "nvim-neotest/nvim-nio" },
+    'rcarriga/nvim-dap-ui',
+    dependencies = { 'mfussenegger/nvim-dap', 'nvim-neotest/nvim-nio' },
     keys = {
       {
-        "<leader>du",
+        '<leader>du',
         function()
-          require("dapui").toggle()
+          require('dapui').toggle()
         end,
         silent = true,
       },
@@ -1326,50 +1335,62 @@ require('lazy').setup({
       --   library = { plugins = { "nvim-dap-ui" }, types = true },
       -- })
 
-      require("dapui").setup(opts)
-      vim.keymap.set('n', '<Leader>b', function() require('dap').toggle_breakpoint() end)
-    end
+      require('dapui').setup(opts)
+      vim.keymap.set('n', '<Leader>b', function()
+        require('dap').toggle_breakpoint()
+      end)
+    end,
   },
   {
-    "theHamsta/nvim-dap-virtual-text",
+    'theHamsta/nvim-dap-virtual-text',
     config = function()
-      require("nvim-dap-virtual-text").setup {
+      require('nvim-dap-virtual-text').setup {
         all_frames = false,
-        virt_text_pos = 'inline'
+        virt_text_pos = 'inline',
       }
-      require("nvim-dap-virtual-text").disable()
-    end
+      require('nvim-dap-virtual-text').disable()
+    end,
   },
   {
-    "ellisonleao/glow.nvim",
-    cmd = "Glow",
+    'ellisonleao/glow.nvim',
+    cmd = 'Glow',
     config = function(self)
-      require('glow').setup({
+      require('glow').setup {
         pager = false,
         width = 400,
         height = 100,
         width_ratio = 1, -- maximum width of the Glow window compared to the nvim window size (overrides `width`)
         height_ratio = 1,
-      })
-    end
+      }
+    end,
   },
   {
-    "numToStr/FTerm.nvim",
+    'numToStr/FTerm.nvim',
     config = function()
-      require 'FTerm'.setup({
-        border     = 'double',
+      require('FTerm').setup {
+        ---Neovim's native window border. See `:h nvim_open_win` for more configuration options.
+        border = 'single',
         dimensions = {
           height = 0.9,
-          width = 0.9,
+          width = 0.8,
         },
-      })
+      }
 
       -- Example keybindings
       vim.keymap.set('n', '<A-i>', '<CMD>lua require("FTerm").toggle()<CR>')
       vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
-    end
-
+    end,
   },
+  -- {
+  --   "nvimdev/lspsaga.nvim",
+  --   config = function()
+  --     require('lspsaga').setup({})
+  --   end,
+  --   dependencies = {
+  --     'nvim-treesitter/nvim-treesitter', -- optional
+  --     'nvim-tree/nvim-web-devicons',     -- optional
+  --   },
+  -- },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -1417,6 +1438,5 @@ require('lazy').setup({
     },
   },
 })
-
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
