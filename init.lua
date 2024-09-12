@@ -88,6 +88,7 @@ P.S. You can delete this when you're done too. It's your config now! :)
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
 vim.g.mapleader = ' '
 vim.g.maplocalleader = ' '
+vim.g.scrollback = 1000
 
 -- Set to true if you have a Nerd Font installed and selected in the terminal
 vim.g.have_nerd_font = false
@@ -217,6 +218,10 @@ vim.keymap.set('n', '<leader>q', vim.diagnostic.setloclist, { desc = 'Open diagn
 -- CTRL+<du> 9line
 vim.keymap.set({ 'n', 'v' }, '<C-d>', '9j', {})
 vim.keymap.set({ 'n', 'v' }, '<C-u>', '9k', {})
+
+-- Jump line start/end
+vim.keymap.set({ 'n', 'v' }, 'gl', '<S-$>', {})
+vim.keymap.set({ 'n', 'v' }, 'gh', '<S-^>', {})
 
 -- Exit terminal mode in the builtin terminal with a shortcut that is a bit easier
 -- for people to discover. Otherwise, you normally need to press <C-\><C-n>, which
@@ -498,6 +503,13 @@ require('lazy').setup({
             additional_args = function()
               return { '--hidden' }
             end,
+          },
+          lsp_implementations = {
+            -- show_line = false,
+            fname_width = 0.6,
+            symbol_width = 0.4,
+            --layout_strategy = 'vertical',
+            layout_config = { width = 0.99 },
           },
           lsp_references = {
             show_line = false,
@@ -1440,3 +1452,5 @@ require('lazy').setup({
 })
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
+--
+vim.lsp.set_log_level 'TRACE'
