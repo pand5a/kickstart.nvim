@@ -94,8 +94,8 @@ vim.g.scrollback = 1000
 vim.g.have_nerd_font = false
 
 -- translator
-vim.g.translator_default_engines = { 'libre' }
-vim.g.translator_source_lang = 'en'
+-- vim.g.translator_default_engines = { 'libre' }
+-- vim.g.translator_source_lang = 'en'
 
 -- [[ Setting options ]]
 -- See `:help vim.opt`
@@ -856,6 +856,10 @@ require('lazy').setup({
           end,
         },
       }
+
+      --require('lspconfig').gopls.setup {
+      --  cmd = { 'gopls', '-remote=localhost:9000' },
+      --}
     end,
   },
 
@@ -1453,4 +1457,4 @@ require('lazy').setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
-vim.lsp.set_log_level 'TRACE'
+--vim.lsp.set_log_level 'TRACE'
