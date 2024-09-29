@@ -770,7 +770,9 @@ require('lazy').setup({
       --        For example, to see the options for `lua_ls`, you could go to: https://luals.github.io/wiki/settings/
       local servers = {
         -- clangd = {},
-        -- gopls = {},
+        -- gopls = {
+        --   cmd = { 'goplsddd", "-remote=localhost:9000' },
+        -- },
         -- pyright = {},
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
@@ -847,6 +849,14 @@ require('lazy').setup({
           end,
         },
       }
+
+      -- local lspconfig = require 'lspconfig'
+      -- lspconfig.gopls.setup {
+      --   cmd = { 'gopls', '-remote=localhost:9000', '-remote.debug=auto' },
+      --   -- filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+      --   -- root_dir = util.root_pattern('go.work', 'go.mod', '.git'),
+      --   -- single_file_support = true,
+      -- }
     end,
   },
 
@@ -878,7 +888,7 @@ require('lazy').setup({
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        -- go = { '/home/esgyn/Documents/tools/gotools/goimports' },
+        go = { 'goimports' },
         -- Conform can also run multiple formatters sequentially
         -- python = { "isort", "black" },
         --
@@ -1440,4 +1450,4 @@ require('lazy').setup({
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
-vim.lsp.set_log_level 'TRACE'
+-- vim.lsp.set_log_level 'TRACE'
