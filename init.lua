@@ -1432,12 +1432,12 @@ require('lazy').setup({
     end,
   },
   {
-    'LunarVim/breadcrumbs.nvim',
+    'pand5a/breadcrumbs.nvim',
     dependencies = {
       { 'SmiteshP/nvim-navic' },
     },
     config = function()
-      require('breadcrumbs').setup()
+      require('breadcrumbs').setup { three_level_path = true }
     end,
   },
 
