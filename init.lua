@@ -80,9 +80,20 @@ If you experience any errors while trying to install kickstart, run `:checkhealt
 
 I hope you enjoy your Neovim journey,
 - TJ
-
 P.S. You can delete this when you're done too. It's your config now! :)
 --]]
+
+vim.cmd [[ 
+let $GOROOT= $HOME."/Documents/soft/sdk/go1.25.4"
+let $PATH = $GOROOT . "/bin:" . $GOPATH . "/bin:" . $PATH 
+]]
+
+vim.cmd [[ 
+let $JAVA_HOME=$HOME . "/Documents/soft/sdk/jdk-23.0.1.jdk/Contents/Home"
+let $PATH=$JAVA_HOME . "/bin:" . $PATH
+let $CLASSPATH=$JAVA_HOME. "/lib/tools.jar:" . $JAVA_HOME . "/lib/dt.jar:" . $CLASSPATH
+]]
+
 -- Set <space> as the leader key
 -- See `:help mapleader`
 --  NOTE: Must happen before plugins are loaded (otherwise wrong leader will be used)
@@ -113,7 +124,6 @@ vim.opt.tabstop = 4 -- number of visual spaces per TAB
 vim.opt.softtabstop = 4 -- number of spacesin tab when editing
 vim.opt.shiftwidth = 4 -- insert 4 spaces on a tab
 vim.opt.expandtab = false -- tabs are spaces, mainly because of python
-
 -- Enable mouse mode, can be useful for resizing splits for example!
 vim.opt.mouse = 'a'
 
@@ -188,8 +198,22 @@ local opts = {
 vim.keymap.set('t', '<Esc>', '<C-\\><C-n>', opts)
 
 -- Comment
-vim.keymap.set('n', '<C-_>', 'gcc', { desc = 'Comment toggle', remap = true })
+vim.keymap.set('n', '<C-_>', 'gcc<CR>', { desc = 'Comment toggle', remap = true })
 vim.keymap.set('v', '<C-_>', 'gc', { desc = 'Comment toggle', remap = true })
+
+-- Zoom split
+local is_maximized = false
+local function toggle_window_maximize()
+  if is_maximized then
+    vim.cmd 'wincmd ='
+    is_maximized = false
+  else
+    vim.cmd 'wincmd |'
+    vim.cmd 'wincmd _'
+    is_maximized = true
+  end
+end
+vim.keymap.set({ 'n', 'v' }, '<leader>zo', toggle_window_maximize, { desc = '[o] Zoom in(Reset) current window/' })
 
 -- Visual mode 可一直缩进
 vim.keymap.set('v', '<', '<gv', opts)
@@ -487,6 +511,13 @@ require('lazy').setup({
       -- Telescope picker. This is really useful to discover what Telescope can
       -- do as well as how to actually do it!
 
+      -- 自定义符号格式化函数
+      local function format_symbol(symbol)
+        local kind = vim.lsp.protocol.SymbolKind[symbol.kind] or 'Unknown'
+        local visibility = symbol.detail and symbol.detail:match '(public|private|protected)' or ''
+        return string.format('%s [%s] %s', kind, visibility, symbol.name)
+      end
+
       -- [[ Configure Telescope ]]
       -- See `:help telescope` and `:help telescope.setup()`
       require('telescope').setup {
@@ -527,6 +558,7 @@ require('lazy').setup({
             layout_strategy = 'vertical',
             layout_config = { width = 0.8 },
             previewer = false,
+            file_ignore_patterns = { '%.class' }, -- 过滤掉 .class 文件
             -- hidden = true,
             -- no_ignore = true,
             -- no_ignore_parent = true,
@@ -535,6 +567,7 @@ require('lazy').setup({
             show_line = false,
             symbol_width = 0.7,
             layout_config = { width = 0.9 },
+            symbol_formatter = '',
           },
 
           lsp_dynamic_workspace_symbols = {
@@ -852,11 +885,12 @@ require('lazy').setup({
               lazy_update_context = false,
               click = true,
             }
-            vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
+            -- vim.o.winbar = "%{%v:lua.require'nvim-navic'.get_location()%}"
           end,
         },
       }
 
+      -- for debug gopls
       --require('lspconfig').gopls.setup {
       --  cmd = { 'gopls', '-remote=localhost:9000' },
       --}
@@ -1397,6 +1431,16 @@ require('lazy').setup({
       vim.keymap.set('t', '<A-i>', '<C-\\><C-n><CMD>lua require("FTerm").toggle()<CR>')
     end,
   },
+  {
+    'LunarVim/breadcrumbs.nvim',
+    dependencies = {
+      { 'SmiteshP/nvim-navic' },
+    },
+    config = function()
+      require('breadcrumbs').setup()
+    end,
+  },
+
   -- {
   --   "nvimdev/lspsaga.nvim",
   --   config = function()
