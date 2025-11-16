@@ -1441,16 +1441,6 @@ require('lazy').setup({
     end,
   },
 
-  -- {
-  --   "nvimdev/lspsaga.nvim",
-  --   config = function()
-  --     require('lspsaga').setup({})
-  --   end,
-  --   dependencies = {
-  --     'nvim-treesitter/nvim-treesitter', -- optional
-  --     'nvim-tree/nvim-web-devicons',     -- optional
-  --   },
-  -- },
   -- The following two comments only work if you have downloaded the kickstart repo, not just copy pasted the
   -- init.lua. If you want these files, they are in the repository, so you can just download them and
   -- place them in the correct locations.
@@ -1477,7 +1467,7 @@ require('lazy').setup({
   -- Or use telescope!
   -- In normal mode type `<space>sh` then write `lazy.nvim-plugin`
   -- you can continue same window with `<space>sr` which resumes last telescope search
-}, {
+}, { -- Plugins end
   ui = {
     -- If you are using a Nerd Font: set icons to an empty table which will use the
     -- default lazy.nvim defined Nerd Font icons, otherwise define a unicode icons table
@@ -1497,7 +1487,8 @@ require('lazy').setup({
       lazy = '💤 ',
     },
   },
-})
+}) -- Lazy end
+
 -- The line beneath this is called `modeline`. See `:help modeline`
 -- vim: ts=2 sts=2 sw=2 et
 --
